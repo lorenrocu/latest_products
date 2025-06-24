@@ -1,0 +1,55 @@
+// Estilos para el snippet de últimos productos
+  .mi_snippet_latest_products {
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      display: flex; /* Asegurar que la tarjeta sea un contenedor flex */
+      flex-direction: column; /* Apilar hijos verticalmente */
+      min-height: 350px; /* Establecer una altura mínima para uniformidad */
+
+      img {
+        max-height: 200px;
+        object-fit: cover;
+        width: 100%; /* Asegurar que la imagen ocupe todo el ancho disponible */
+      }
+      .card-body {
+        padding: 5px; /* Reducido para menor espaciado interno */
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1; /* Hace que el card-body ocupe el espacio restante */
+      }
+      .card-title {
+        font-size: 1.1em;
+        margin-bottom: 2px; /* Reducido para acercar al precio */
+      }
+      .product-price {
+        margin-top: auto; /* Empuja el precio hacia abajo */
+        font-size: 1rem;
+      }
+      .card-text {
+        font-size: 0.9em;
+        color: #555;
+      }
+      .btn-primary {
+        background-color: #87465C !important;
+        border-color: #87465C !important;
+        color: #FFFFFF !important; // Asegurar que el texto del botón sea blanco
+        font-size: 1rem;
+      }
+
+      .btn-primary i,
+      button.btn.btn-sm.btn-block.o_default_snippet_text.bg-transparent.btn-outline-primary.text-primary i
+      {
+        margin-right: .5rem !important;
+      }
+
+      a.btn.btn-sm.btn-block.o_default_snippet_text.bg-transparent.btn-outline-primary.text-primary {
+        background-color: #fff !important;
+        border-color: #87465C !important;
+        color: #87465C !important; // Asegurar que el texto del botón sea blanco
+        font-size: 1rem;
+      }
+    }
+  }
+  
