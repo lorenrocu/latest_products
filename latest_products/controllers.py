@@ -51,16 +51,21 @@ class LatestProductsController(http.Controller):
             _logger.info(f'Número de productos encontrados: {len(products)}')
 
             product_data = []
-            for product in products:
-                price_info = product._get_combination_info_variant(pricelist=pricelist)
-                _logger.info(f'Procesando producto: {product.name} (ID: {product.id}), Precio: {price_info.get("price")}')
+            for product_template in products:
+                product_variant = product_template.product_variant_id
+                if not product_variant:
+                    _logger.warning(f'El producto {product_template.name} (ID: {product_template.id}) no tiene una variante de producto predeterminada y será omitido.')
+                    continue
+
+                price_info = product_variant._get_combination_info_variant(pricelist=pricelist)
+                _logger.info(f'Procesando producto: {product_template.name} (ID: {product_template.id}), Precio: {price_info.get("price")}')
                 product_data.append({
-                    'id': product.id,
-                    'name': product.name,
+                    'id': product_template.id,
+                    'name': product_template.name,
                     'price': price_info.get('price', 0),
                     'currency': pricelist.currency_id.name if pricelist else http.request.website.currency_id.name,
-                    'image': product.image_1920,
-                    'variant_id': price_info.get('product_id', product.product_variant_id.id)
+                    'image': product_template.image_1920,
+                    'variant_id': price_info.get('product_id', product_variant.id)
                 })
             
             _logger.info(f'Datos finales a enviar: {product_data}')
