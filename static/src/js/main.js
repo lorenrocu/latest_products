@@ -13,84 +13,58 @@ odoo.define('latest_products.main', function (require) {
         },
 
         start: function () {
+            this._super.apply(this, arguments);
+            console.log('LatestProductsSnippet widget started for element:', this.el);
+            this.$el.find('.row').html('<div class="col-12 text-center"><p class="text-success">Widget inicializado correctamente. Cargando productos...</p></div>');
+            this._loadProducts();
+        },
+
+        _loadProducts: function () {
             var self = this;
-            var $container = self.$el.find('.row');
-            $container.html('<div class="col-12 text-center"><p class="text-info">🔄 Cargando productos... (Verificando logs en consola)</p></div>');
-            
-            // Obtener la lista de precios del atributo data o usar la por defecto
             var pricelistId = self.$el.data('pricelist-id') || 1573;
-            
-            console.log('=== RPC CALL DEBUG ===');
-            console.log('Element data-pricelist-id:', self.$el.data('pricelist-id'));
-            console.log('Final pricelistId to send:', pricelistId);
-            console.log('Type of pricelistId:', typeof pricelistId);
-            console.log('=====================');
-            
+
             self._rpc({
                 route: '/latest_products/snippet',
                 params: {
                     pricelist_id: pricelistId,
                 },
             }).then(function (result) {
-                console.log('=== DEBUGGING LATEST PRODUCTS ===');
-                console.log('Raw result from controller:', result);
-                console.log('Type of result:', typeof result);
-                console.log('Result keys:', Object.keys(result || {}));
-                console.log('Products array:', result.products);
-                console.log('Products length:', result.products ? result.products.length : 'undefined');
-                console.log('Error field:', result.error);
-                console.log('================================');
-                
                 var $container = self.$el.find('.row');
                 $container.empty();
-                
-                // Mostrar información de debugging en pantalla también
-                $container.append('<div class="col-12"><div class="alert alert-info"><strong>DEBUG INFO:</strong><br>' +
-                    'Pricelist ID enviado: ' + pricelistId + '<br>' +
-                    'Respuesta del servidor: ' + JSON.stringify(result, null, 2) + '<br>' +
-                    'Productos encontrados: ' + (result.products ? result.products.length : 'undefined') +
-                    '</div></div>');
-                
+
                 if (result.error) {
-                    $container.append('<div class="col-12 text-center"><p class="text-danger">Error del servidor: ' + result.error + '</p></div>');
+                    $container.append('<div class="col-12 text-center"><p class="text-danger">Error: ' + result.error + '</p></div>');
                     return;
                 }
-                
+
                 if (!result.products || result.products.length === 0) {
-                    $container.append('<div class="col-12 text-center"><p>No hay productos recientes para mostrar.</p></div>');
+                    $container.append('<div class="col-12 text-center"><p>No se encontraron productos.</p></div>');
                     return;
                 }
-                result.products.forEach(function(product) {
-                    var card = '<div class="col-lg-3 col-md-6 col-sm-12 mb-4">' +
-                        '<div class="card mb-3">' +
-                        '<div class="card-body product-info-container">' +
+
+                result.products.forEach(function (product) {
+                    var productCard = '<div class="col-lg-3 col-md-6 mb-4">' +
+                        '<div class="card">' +
+                        '<div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">' +
+                        '<img src="data:image/png;base64,' + product.image + '" class="img-fluid"/>' +
                         '<a href="/shop/product/' + product.id + '">' +
-                        (product.image ? '<img src="data:image/png;base64,' + product.image + '" class="img-fluid" alt="Product Image"/>' : '<img src="/web/static/src/img/placeholder.png" class="img-fluid" alt="Product Image Placeholder"/>') +
+                        '<div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>' +
                         '</a>' +
-                        '<h5 class="card-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
-                        '<a href="/shop/product/' + product.id + '">' +
-                        (product.default_code ? '[' + product.default_code + '] ' : '') + product.name +
-                        '</a></h5>' +
-                        '<div class="product-price">' +
-                        product.price + ' ' + product.currency +
                         '</div>' +
-                        '<div class="mt-2 text-center">' +
-                        '<form action="/shop/cart/update" method="post" style="display: inline;">' +
-                        '<input type="hidden" name="product_id" value="' + product.variant_id + '"/>' +
-                        '<input type="hidden" name="add_qty" value="1"/>' +
-                        '<input type="hidden" name="csrf_token" value="' + $('meta[name="csrf-token"]').attr('content') + '"/>' +
-                        '<button type="submit" class="btn btn-primary btn-sm btn-block">' +
-                        '<i class="fa fa-shopping-cart"></i> Añadir al carrito' +
-                        '</button></form></div></div></div></div>';
-                    $container.append(card);
+                        '<div class="card-body">' +
+                        '<h5 class="card-title">' + product.name + '</h5>' +
+                        '<p class="card-text">' + product.price + ' ' + product.currency + '</p>' +
+                        '<a href="#" class="btn btn-primary">Añadir al carrito</a>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>';
+                    $container.append(productCard);
                 });
             }).catch(function (error) {
-                console.error('Error loading products:', error);
+                console.error('RPC Query Failed:', error);
                 var $container = self.$el.find('.row');
-                $container.empty();
-                $container.append('<div class="col-12 text-center"><p class="text-danger">Error al cargar productos: ' + (error.message || 'Error desconocido') + '</p></div>');
+                $container.html('<div class="col-12 text-center"><p class="text-danger">Error al cargar productos. Verifique la consola.</p></div>');
             });
-            return this._super.apply(this, arguments);
         },
 
         _onAddToCartClick: function (ev) {
