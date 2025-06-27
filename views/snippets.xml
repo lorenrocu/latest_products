@@ -21,8 +21,10 @@
                                         <img src="/web/static/src/img/placeholder.png" class="img-fluid" alt="Product Image Placeholder"/>
                                     </t>
                                 </a>
-                                <h5 class="card-title" style="font-size: 20px;">
-                                  <a t-attf-href="/shop/product/#{product.id}" t-field="product.name"/>
+                                <h5 class="card-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                  <a t-attf-href="/shop/product/#{product.id}">
+                                    <t t-if="product.default_code">[<t t-esc="product.default_code"/>] </t><t t-esc="product.name"/>
+                                  </a>
                                 </h5>
                                 <div class="product-price">
                                     <span t-field="product.list_price" t-options='{"widget": "monetary", "display_currency": product.currency_id}'/>
@@ -54,8 +56,10 @@
                                         <img src="/web/static/src/img/placeholder.png" class="img-fluid" alt="Product Image Placeholder"/>
                                     </t>
                                 </a>
-                                <h5 class="card-title" style="font-size: 20px;">
-                                  <a t-attf-href="/shop/product/#{product.id}" t-field="product.name"/>
+                                <h5 class="card-title" style="font-size: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                  <a t-attf-href="/shop/product/#{product.id}">
+                                    <t t-if="product.default_code">[<t t-esc="product.default_code"/>] </t><t t-esc="product.name"/>
+                                  </a>
                                 </h5>
                                 <div class="product-price">
                                     <span t-field="product.list_price" t-options='{"widget": "monetary", "display_currency": product.currency_id}'/>
