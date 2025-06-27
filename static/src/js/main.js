@@ -14,18 +14,42 @@ odoo.define('latest_products.main', function (require) {
 
         start: function () {
             var self = this;
-            // Obtener la lista de precios del atributo data o usar la por defecto
-            var pricelistId = this.$el.data('pricelist-id') || 1573;
+            var $container = self.$el.find('.row');
+            $container.html('<div class="col-12 text-center"><p class="text-info">🔄 Cargando productos... (Verificando logs en consola)</p></div>');
             
-            rpc.query({
+            // Obtener la lista de precios del atributo data o usar la por defecto
+            var pricelistId = self.$el.data('pricelist-id') || 1573;
+            
+            console.log('=== RPC CALL DEBUG ===');
+            console.log('Element data-pricelist-id:', self.$el.data('pricelist-id'));
+            console.log('Final pricelistId to send:', pricelistId);
+            console.log('Type of pricelistId:', typeof pricelistId);
+            console.log('=====================');
+            
+            self._rpc({
                 route: '/latest_products/snippet',
                 params: {
-                    pricelist_id: pricelistId
+                    pricelist_id: pricelistId,
                 },
             }).then(function (result) {
-                console.log('Products loaded:', result);
+                console.log('=== DEBUGGING LATEST PRODUCTS ===');
+                console.log('Raw result from controller:', result);
+                console.log('Type of result:', typeof result);
+                console.log('Result keys:', Object.keys(result || {}));
+                console.log('Products array:', result.products);
+                console.log('Products length:', result.products ? result.products.length : 'undefined');
+                console.log('Error field:', result.error);
+                console.log('================================');
+                
                 var $container = self.$el.find('.row');
                 $container.empty();
+                
+                // Mostrar información de debugging en pantalla también
+                $container.append('<div class="col-12"><div class="alert alert-info"><strong>DEBUG INFO:</strong><br>' +
+                    'Pricelist ID enviado: ' + pricelistId + '<br>' +
+                    'Respuesta del servidor: ' + JSON.stringify(result, null, 2) + '<br>' +
+                    'Productos encontrados: ' + (result.products ? result.products.length : 'undefined') +
+                    '</div></div>');
                 
                 if (result.error) {
                     $container.append('<div class="col-12 text-center"><p class="text-danger">Error del servidor: ' + result.error + '</p></div>');
