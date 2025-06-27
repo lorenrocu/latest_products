@@ -23,10 +23,17 @@ odoo.define('latest_products.main', function (require) {
                     pricelist_id: pricelistId
                 },
             }).then(function (result) {
+                console.log('Products loaded:', result);
                 var $container = self.$el.find('.row');
                 $container.empty();
-                if (result.products.length === 0) {
-                    $container.append('<p>No hay productos recientes para mostrar.</p>');
+                
+                if (result.error) {
+                    $container.append('<div class="col-12 text-center"><p class="text-danger">Error del servidor: ' + result.error + '</p></div>');
+                    return;
+                }
+                
+                if (!result.products || result.products.length === 0) {
+                    $container.append('<div class="col-12 text-center"><p>No hay productos recientes para mostrar.</p></div>');
                     return;
                 }
                 result.products.forEach(function(product) {
@@ -53,6 +60,11 @@ odoo.define('latest_products.main', function (require) {
                         '</button></form></div></div></div></div>';
                     $container.append(card);
                 });
+            }).catch(function (error) {
+                console.error('Error loading products:', error);
+                var $container = self.$el.find('.row');
+                $container.empty();
+                $container.append('<div class="col-12 text-center"><p class="text-danger">Error al cargar productos: ' + (error.message || 'Error desconocido') + '</p></div>');
             });
             return this._super.apply(this, arguments);
         },
