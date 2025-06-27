@@ -1,87 +1,16 @@
 <odoo>
   <!-- 1) Plantilla del snippet -->
   <template id="mi_snippet" name="Ultimos Productos">
-    <section class="text-center my-5 mi_snippet_latest_products">
+    <section class="text-center my-5 mi_snippet_latest_products" data-pricelist-id="1573">
       <div class="container">
         <h1>Últimos Productos</h1>
-        <t t-set="products" t-value="request.env['product.template'].search([('website_published', '=', True)], order='create_date desc', limit=8)"/>
-        <div class="row" t-if="products">
-            <t t-foreach="range(0, len(products), 2)" t-as="i">
-                <div class="col-lg-3 col-md-6 col-sm-12 mb-4"> <!-- Columna principal adaptable -->
-                    <!-- Primer producto en la columna -->
-                    <t t-if="i &lt; len(products)">
-                        <t t-set="product" t-value="products[i]"/>
-                        <div class="card mb-3"> <!-- Tarjeta del primer producto, con margen inferior -->
-                            <div class="card-body product-info-container">
-                                <a t-attf-href="/shop/product/#{product.id}">
-                                    <t t-if="product.image_1920">
-                                        <img t-attf-src="#{image_data_uri(product.image_1920)}" class="img-fluid" alt="Product Image"/>
-                                    </t>
-                                    <t t-else="">
-                                        <img src="/web/static/src/img/placeholder.png" class="img-fluid" alt="Product Image Placeholder"/>
-                                    </t>
-                                </a>
-                                <h5 class="card-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                  <a t-attf-href="/shop/product/#{product.id}">
-                                    <t t-if="product.default_code">[<t t-esc="product.default_code"/>] </t><t t-esc="product.name"/>
-                                  </a>
-                                </h5>
-                                <div class="product-price">
-                                    <span t-field="product.list_price" t-options='{"widget": "monetary", "display_currency": product.currency_id}'/>
-                                </div>
-                                <div class="mt-2 text-center">
-                                    <form action="/shop/cart/update" method="post" style="display: inline;">
-                                        <input type="hidden" name="product_id" t-attf-value="#{product.product_variant_id.id}"/>
-                                        <input type="hidden" name="add_qty" value="1"/>
-                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                        <button type="submit" class="btn btn-primary btn-sm btn-block">
-                                            <i class="fa fa-shopping-cart"></i> Añadir al carrito
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </t>
-
-                    <!-- Segundo producto en la columna -->
-                    <t t-if="(i + 1) &lt; len(products)">
-                        <t t-set="product" t-value="products[i+1]"/>
-                        <div class="card"> <!-- Tarjeta del segundo producto -->
-                             <div class="card-body product-info-container">
-                                <a t-attf-href="/shop/product/#{product.id}">
-                                    <t t-if="product.image_1920">
-                                        <img t-attf-src="#{image_data_uri(product.image_1920)}" class="img-fluid" alt="Product Image"/>
-                                    </t>
-                                    <t t-else="">
-                                        <img src="/web/static/src/img/placeholder.png" class="img-fluid" alt="Product Image Placeholder"/>
-                                    </t>
-                                </a>
-                                <h5 class="card-title" style="font-size: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                  <a t-attf-href="/shop/product/#{product.id}">
-                                    <t t-if="product.default_code">[<t t-esc="product.default_code"/>] </t><t t-esc="product.name"/>
-                                  </a>
-                                </h5>
-                                <div class="product-price">
-                                    <span t-field="product.list_price" t-options='{"widget": "monetary", "display_currency": product.currency_id}'/>
-                                </div>
-                                <div class="mt-2 text-center">
-                                    <form action="/shop/cart/update" method="post" style="display: inline;">
-                                        <input type="hidden" name="product_id" t-attf-value="#{product.product_variant_id.id}"/>
-                                        <input type="hidden" name="add_qty" value="1"/>
-                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                        <button type="submit" class="btn btn-primary btn-sm btn-block">
-                                            <i class="fa fa-shopping-cart"></i> Añadir al carrito
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </t>
+        <!-- Los productos se cargarán dinámicamente via JavaScript -->
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Cargando productos...</span>
                 </div>
-            </t>
-        </div>
-        <div class="row" t-else="">
-            <p>No hay productos recientes para mostrar.</p>
+            </div>
         </div>
         <div id="product_notification_area"></div> <!-- Contenedor para notificaciones -->
       </div>

@@ -14,9 +14,14 @@ odoo.define('latest_products.main', function (require) {
 
         start: function () {
             var self = this;
+            // Obtener la lista de precios del atributo data o usar la por defecto
+            var pricelistId = this.$el.data('pricelist-id') || 1573;
+            
             rpc.query({
                 route: '/latest_products/snippet',
-                params: {},
+                params: {
+                    pricelist_id: pricelistId
+                },
             }).then(function (result) {
                 var $container = self.$el.find('.row');
                 $container.empty();
@@ -40,8 +45,9 @@ odoo.define('latest_products.main', function (require) {
                         '</div>' +
                         '<div class="mt-2 text-center">' +
                         '<form action="/shop/cart/update" method="post" style="display: inline;">' +
-                        '<input type="hidden" name="product_id" value="' + product.id + '"/>' +
+                        '<input type="hidden" name="product_id" value="' + product.variant_id + '"/>' +
                         '<input type="hidden" name="add_qty" value="1"/>' +
+                        '<input type="hidden" name="csrf_token" value="' + $('meta[name="csrf-token"]').attr('content') + '"/>' +
                         '<button type="submit" class="btn btn-primary btn-sm btn-block">' +
                         '<i class="fa fa-shopping-cart"></i> Añadir al carrito' +
                         '</button></form></div></div></div></div>';
