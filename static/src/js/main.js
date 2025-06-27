@@ -13,15 +13,42 @@ odoo.define('latest_products.main', function (require) {
         },
 
         start: function () {
-            this._super.apply(this, arguments);
-            this.$notificationArea = this.$('#product_notification_area');
-            if (!this.$notificationArea.length) {
-                // Si el área de notificación específica no existe en el snippet, la crea dinámicamente
-                // o busca un contenedor más general si es necesario.
-                // Por ahora, asumimos que está dentro del selector del snippet o se añade manualmente.
-                // Considerar crearla si no existe para mayor robustez.
-                // console.warn('Área de notificación no encontrada. Las notificaciones podrían no mostrarse.');
-            }
+            var self = this;
+            rpc.query({
+                route: '/latest_products/snippet',
+                params: {},
+            }).then(function (result) {
+                var $container = self.$el.find('.row');
+                $container.empty();
+                if (result.products.length === 0) {
+                    $container.append('<p>No hay productos recientes para mostrar.</p>');
+                    return;
+                }
+                result.products.forEach(function(product) {
+                    var card = '<div class="col-lg-3 col-md-6 col-sm-12 mb-4">' +
+                        '<div class="card mb-3">' +
+                        '<div class="card-body product-info-container">' +
+                        '<a href="/shop/product/' + product.id + '">' +
+                        (product.image ? '<img src="data:image/png;base64,' + product.image + '" class="img-fluid" alt="Product Image"/>' : '<img src="/web/static/src/img/placeholder.png" class="img-fluid" alt="Product Image Placeholder"/>') +
+                        '</a>' +
+                        '<h5 class="card-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+                        '<a href="/shop/product/' + product.id + '">' +
+                        (product.default_code ? '[' + product.default_code + '] ' : '') + product.name +
+                        '</a></h5>' +
+                        '<div class="product-price">' +
+                        product.price + ' ' + product.currency +
+                        '</div>' +
+                        '<div class="mt-2 text-center">' +
+                        '<form action="/shop/cart/update" method="post" style="display: inline;">' +
+                        '<input type="hidden" name="product_id" value="' + product.id + '"/>' +
+                        '<input type="hidden" name="add_qty" value="1"/>' +
+                        '<button type="submit" class="btn btn-primary btn-sm btn-block">' +
+                        '<i class="fa fa-shopping-cart"></i> Añadir al carrito' +
+                        '</button></form></div></div></div></div>';
+                    $container.append(card);
+                });
+            });
+            return this._super.apply(this, arguments);
         },
 
         _onAddToCartClick: function (ev) {
