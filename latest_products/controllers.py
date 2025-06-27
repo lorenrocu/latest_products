@@ -5,65 +5,67 @@ import logging
 _logger = logging.getLogger(__name__)
 
 class LatestProductsController(http.Controller):
-    @http.route('/latest_products/snippet', type='json', auth='public')
-    def get_latest_products(self, pricelist_id=1573):
+    @http.route('/latest_products/snippet', type='json', auth='public', website=True)
+    def get_latest_products(self, pricelist_id=None, **kwargs):
+        _logger.info('--- CONTROLLER: get_latest_products ---')
+        _logger.info(f'Pricelist ID recibido: {pricelist_id} (tipo: {type(pricelist_id)})')
         try:
-            _logger.info('=== CONTROLLER DEBUG START ===')
-            _logger.info('Original pricelist_id received: %s (type: %s)', pricelist_id, type(pricelist_id))
-            pricelist_id = int(pricelist_id) if pricelist_id else 1573
-            _logger.info('Converted pricelist_id: %s', pricelist_id)
+            Pricelist = http.request.env['product.pricelist']
+            Product = http.request.env['product.template']
             
+            try:
+                pricelist_id = int(pricelist_id) if pricelist_id is not None else 0
+            except (ValueError, TypeError):
+                _logger.warning(f'Pricelist ID inválido: {pricelist_id}. Se usará 0.')
+                pricelist_id = 0
+
+            _logger.info(f'Pricelist ID procesado: {pricelist_id}')
+
+            products = []
+            pricelist = None
             if pricelist_id == 0:
-                # Mostrar todos los productos publicados
-                _logger.info('Mode: Show all published products')
-                products = request.env['product.template'].sudo().search([
+                _logger.info('Modo: Búsqueda de todos los productos publicados.')
+                products = Product.search([
+                    ('is_published', '=', True),
                     ('website_published', '=', True)
-                ], order='create_date desc', limit=8)
-                _logger.info('Found %d published products', len(products))
-                pricelist = request.env['product.pricelist'].sudo().browse(1)  # Lista de precios por defecto para precios
-                _logger.info('Using default pricelist ID 1 for pricing')
+                ], limit=4, order='create_date desc')
             else:
-                _logger.info('Mode: Filter by pricelist %s', pricelist_id)
-                pricelist = request.env['product.pricelist'].sudo().browse(pricelist_id)
-                _logger.info('Pricelist found: %s (exists: %s)', pricelist.name if pricelist else 'None', pricelist.exists())
+                _logger.info(f'Modo: Búsqueda por tarifa específica (ID: {pricelist_id}).')
+                pricelist = Pricelist.browse(pricelist_id)
                 if not pricelist.exists():
-                    _logger.warning('Pricelist %s not found, returning empty', pricelist_id)
-                    return {'products': [], 'error': f'Pricelist {pricelist_id} not found'}
-                # Buscar items de la lista de precios
-                pricelist_items = request.env['product.pricelist.item'].sudo().search([
-                    ('pricelist_id', '=', pricelist_id),
-                    ('product_tmpl_id', '!=', False)
-                ])
-                _logger.info('Found %d pricelist items', len(pricelist_items))
-                product_ids = pricelist_items.mapped('product_tmpl_id').ids
-                _logger.info('Product IDs from pricelist: %s', product_ids)
-                # Solo productos publicados en el website
-                products = request.env['product.template'].sudo().search([
-                    ('id', 'in', product_ids),
-                    ('website_published', '=', True)
-                ], order='create_date desc', limit=8)
-                _logger.info('Found %d published products from pricelist', len(products))
+                    _logger.warning(f'La tarifa con ID {pricelist_id} no existe.')
+                    return {'error': 'Pricelist not found', 'products': []}
                 
+                _logger.info(f'Tarifa encontrada: {pricelist.name}')
+                _logger.info(f'Items en la tarifa: {len(pricelist.item_ids)}')
+                product_ids = [item.product_tmpl_id.id for item in pricelist.item_ids]
+                _logger.info(f'IDs de productos extraídos de la tarifa: {product_ids}')
+
+                if product_ids:
+                    products = Product.search([
+                        ('id', 'in', product_ids),
+                        ('is_published', '=', True),
+                        ('website_published', '=', True)
+                    ], limit=4, order='create_date desc')
+            
+            _logger.info(f'Número de productos encontrados: {len(products)}')
+
             product_data = []
-            _logger.info('Processing %d products for output', len(products))
             for product in products:
-                _logger.info('Processing product: %s (ID: %s)', product.name, product.id)
-                price = pricelist.price_get(product.product_variant_id.id, 1)[pricelist.id]
-                _logger.info('Product %s price: %s %s', product.name, price, pricelist.currency_id.symbol)
+                price_info = product._get_combination_info_variant(pricelist=pricelist)
+                _logger.info(f'Procesando producto: {product.name} (ID: {product.id}), Precio: {price_info.get("price")}')
                 product_data.append({
                     'id': product.id,
-                    'variant_id': product.product_variant_id.id,
                     'name': product.name,
-                    'default_code': product.default_code,
+                    'price': price_info.get('price', 0),
+                    'currency': pricelist.currency_id.name if pricelist else http.request.website.currency_id.name,
                     'image': product.image_1920,
-                    'price': price,
-                    'currency': pricelist.currency_id.symbol,
+                    'variant_id': price_info.get('product_id', product.product_variant_id.id)
                 })
-                
-            _logger.info('Final product_data length: %d', len(product_data))
-            _logger.info('=== CONTROLLER DEBUG END ===')
-            return {'products': product_data}
             
+            _logger.info(f'Datos finales a enviar: {product_data}')
+            return {'products': product_data}
+
         except Exception as e:
-            _logger.error('Error in get_latest_products: %s', str(e))
+            _logger.error(f'Error catastrófico en el controlador: {e}', exc_info=True)
             return {'error': str(e), 'products': []}
