@@ -79,41 +79,14 @@ odoo.define('latest_products.main', function (require) {
         },
 
         _onAddToCartClick: function (ev) {
+            ev.preventDefault();
             var self = this;
             var $button = $(ev.currentTarget);
             var productId = $button.data('product-id');
 
-            // Deshabilitar el botón para evitar múltiples clics
-            $button.attr('disabled', 'disabled').addClass('disabled');
-            var originalButtonText = $button.html();
-            $button.html('<i class="fa fa-spinner fa-spin"></i> ' + _t('Adding...'));
-
-            this._rpc({
-                route: '/shop/cart/update_json',
-                params: {
-                    product_id: productId,
-                    add_qty: 1
-                },
-            }).then(function (data) {
-                // Actualizar el ícono del carrito (si existe uno genérico en la página)
-                var $cartQuantity = $('.my_cart_quantity');
-                if ($cartQuantity.length) {
-                    $cartQuantity.text(data.cart_quantity || 0);
-                }
-                // Mostrar notificación
-                self._showNotification(_t('Producto añadido al carrito!'), 'success');
-                // Restaurar botón
-                $button.removeAttr('disabled').removeClass('disabled').html(originalButtonText);
-            }).guardedCatch(function (error) {
-                console.error('Error adding product to cart:', error);
-                var errorMessage = _t('Error al añadir el producto al carrito.');
-                if (error.message && error.message.data && error.message.data.message) {
-                    errorMessage = error.message.data.message;
-                }
-                self._showNotification(errorMessage, 'danger');
-                // Restaurar botón en caso de error
-                $button.removeAttr('disabled').removeClass('disabled').html(originalButtonText);
-            });
+            // Redirigir directamente al carrito con el producto
+            var cartUrl = '/shop/cart/update?product_id=' + productId + '&add_qty=1';
+            window.location.href = cartUrl;
         },
 
         _showNotification: function (message, type) {
