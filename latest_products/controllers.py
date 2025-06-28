@@ -6,9 +6,10 @@ _logger = logging.getLogger(__name__)
 
 class LatestProductsController(http.Controller):
     @http.route('/latest_products/snippet', type='json', auth='public', website=True)
-    def get_latest_products(self, pricelist_id=None, **kwargs):
+    def get_latest_products(self, pricelist_id=None, product_type='latest', **kwargs):
         _logger.info('--- CONTROLLER: get_latest_products ---')
         _logger.info(f'Pricelist ID recibido: {pricelist_id} (tipo: {type(pricelist_id)})')
+        _logger.info(f'Product type: {product_type}')
         try:
             Pricelist = http.request.env['product.pricelist']
             Product = http.request.env['product.template']
@@ -23,14 +24,23 @@ class LatestProductsController(http.Controller):
 
             products = []
             pricelist = None
+            
+            # Determinar el orden según el tipo de producto
+            if product_type == 'best_sellers':
+                order = 'sales_count desc'
+                _logger.info('Modo: Productos más vendidos.')
+            else:
+                order = 'create_date desc'
+                _logger.info('Modo: Últimos productos.')
+            
             if pricelist_id == 0:
-                _logger.info('Modo: Búsqueda de todos los productos publicados.')
+                _logger.info(f'Búsqueda de todos los productos publicados con orden: {order}')
                 products = Product.search([
                     ('is_published', '=', True),
                     ('website_published', '=', True)
-                ], limit=8, order='create_date desc')
+                ], limit=8, order=order)
             else:
-                _logger.info(f'Modo: Búsqueda por tarifa específica (ID: {pricelist_id}).')
+                _logger.info(f'Búsqueda por tarifa específica (ID: {pricelist_id}) con orden: {order}')
                 pricelist = Pricelist.browse(pricelist_id)
                 if not pricelist.exists():
                     _logger.warning(f'La tarifa con ID {pricelist_id} no existe.')
@@ -46,7 +56,7 @@ class LatestProductsController(http.Controller):
                         ('id', 'in', product_ids),
                         ('is_published', '=', True),
                         ('website_published', '=', True)
-                    ], limit=8, order='create_date desc')
+                    ], limit=8, order=order)
             
             _logger.info(f'Número de productos encontrados: {len(products)}')
 

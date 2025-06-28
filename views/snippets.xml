@@ -3,15 +3,30 @@
   <template id="mi_snippet" name="Ultimos Productos">
     <section class="text-center my-5 mi_snippet_latest_products" data-pricelist-id="1573">
       <div class="container">
-        <h1>Últimos Productos</h1>
-        <!-- Los productos se cargarán dinámicamente via JavaScript -->
-        <div class="row">
-            <div class="col-12 text-center">
-                <div class="spinner-border" role="status">
-                    <span class="sr-only">Cargando productos...</span>
-                </div>
-            </div>
+        <!-- Sección Últimos Productos -->
+        <div class="latest-products-section mb-5">
+          <h1>Últimos Productos</h1>
+          <div class="row" id="latest_products_container">
+              <div class="col-12 text-center">
+                  <div class="spinner-border" role="status">
+                      <span class="sr-only">Cargando productos...</span>
+                  </div>
+              </div>
+          </div>
         </div>
+        
+        <!-- Sección Más Vendidos -->
+        <div class="best-sellers-section">
+          <h1>Más Vendidos</h1>
+          <div class="row" id="best_sellers_container">
+              <div class="col-12 text-center">
+                  <div class="spinner-border" role="status">
+                      <span class="sr-only">Cargando productos...</span>
+                  </div>
+              </div>
+          </div>
+        </div>
+        
         <div id="product_notification_area"></div> <!-- Contenedor para notificaciones -->
       </div>
     </section>

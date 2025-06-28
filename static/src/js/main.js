@@ -15,15 +15,25 @@ odoo.define('latest_products.main', function (require) {
         start: function () {
             this._super.apply(this, arguments);
             console.log('LatestProductsSnippet widget started for element:', this.el);
-            this.$el.find('.row').html('<div class="col-12 text-center"><p class="text-success">Widget inicializado correctamente. Cargando productos...</p></div>');
-            this._loadProducts();
+            this._loadLatestProducts();
+            this._loadBestSellers();
         },
 
-        _loadProducts: function () {
+        _loadLatestProducts: function () {
+            this._loadProducts('latest', '#latest_products_container');
+        },
+
+        _loadBestSellers: function () {
+            this._loadProducts('best_sellers', '#best_sellers_container');
+        },
+
+        _loadProducts: function (productType, containerSelector) {
             var self = this;
             var pricelistId = self.$el.data('pricelist-id') || 0; // Default to 0 to show all products
 
             console.log('--- JS: _loadProducts ---');
+            console.log('Product Type:', productType);
+            console.log('Container Selector:', containerSelector);
             console.log('Pricelist ID from data attribute:', self.$el.data('pricelist-id'));
             console.log('Final Pricelist ID to be sent:', pricelistId);
 
@@ -31,12 +41,13 @@ odoo.define('latest_products.main', function (require) {
                 route: '/latest_products/snippet',
                 params: {
                     pricelist_id: pricelistId,
+                    product_type: productType,
                 },
             }).then(function (result) {
                 console.log('--- JS: RPC Success ---');
                 console.log('Raw result received from controller:', result);
 
-                var $container = self.$el.find('.row');
+                var $container = self.$el.find(containerSelector);
                 $container.empty();
 
                 if (result.error) {
@@ -51,7 +62,7 @@ odoo.define('latest_products.main', function (require) {
                     return;
                 }
 
-                console.log('Rendering ' + result.products.length + ' products.');
+                console.log('Rendering ' + result.products.length + ' products for ' + productType);
                 result.products.forEach(function (product) {
                     var productCode = product.code ? product.code + ' - ' : '';
                     var productCard = '<div class="col-lg-3 col-md-6 mb-4">' +
@@ -73,7 +84,7 @@ odoo.define('latest_products.main', function (require) {
                 });
             }).catch(function (error) {
                 console.error('--- JS: RPC Failed ---', error);
-                var $container = self.$el.find('.row');
+                var $container = self.$el.find(containerSelector);
                 $container.html('<div class="col-12 text-center"><p class="text-danger">Error al cargar productos. Verifique la consola para más detalles.</p></div>');
             });
         },
