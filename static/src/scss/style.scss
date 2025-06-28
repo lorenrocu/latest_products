@@ -7,7 +7,7 @@
       display: flex;
       flex-direction: column;
       height: 100%; /* Asegurar que todas las tarjetas tengan la misma altura */
-      min-height: 400px; /* Altura mínima para uniformidad */
+      min-height: 300px; /* Altura mínima para uniformidad */
 
       img {
         max-height: 200px;
@@ -81,5 +81,9 @@
       display: flex;
       margin-bottom: 20px;
     }
+
+    p.card-text.mt-auto {
+      margin-top: 10px !important;
+  }
   }
   
