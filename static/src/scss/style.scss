@@ -4,38 +4,57 @@
       border: 1px solid #ddd;
       border-radius: 4px;
       margin-bottom: 15px;
-      display: flex; /* Asegurar que la tarjeta sea un contenedor flex */
-      flex-direction: column; /* Apilar hijos verticalmente */
-      min-height: 350px; /* Establecer una altura mínima para uniformidad */
+      display: flex;
+      flex-direction: column;
+      height: 100%; /* Asegurar que todas las tarjetas tengan la misma altura */
+      min-height: 400px; /* Altura mínima para uniformidad */
 
       img {
         max-height: 200px;
         object-fit: cover;
-        width: 100%; /* Asegurar que la imagen ocupe todo el ancho disponible */
+        width: 100%;
+        height: 200px; /* Altura fija para todas las imágenes */
       }
+      
       .card-body {
-        padding: 5px; /* Reducido para menor espaciado interno */
+        padding: 15px;
         display: flex;
         flex-direction: column;
         flex-grow: 1; /* Hace que el card-body ocupe el espacio restante */
+        justify-content: space-between; /* Distribuir el contenido */
       }
+      
       .card-title {
         font-size: 1.1em;
-        margin-bottom: 2px; /* Reducido para acercar al precio */
+        margin-bottom: 10px;
+        line-height: 1.2;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap; /* Mantener el título en una sola línea */
+        font-weight: 600;
       }
-      .product-price {
-        margin-top: auto; /* Empuja el precio hacia abajo */
-        font-size: 1rem;
-      }
+      
       .card-text {
-        font-size: 0.9em;
-        color: #555;
+        font-size: 1.1em;
+        color: #333;
+        font-weight: bold;
+        margin-bottom: 15px;
+        flex-grow: 0; /* No expandir */
       }
+      
       .btn-primary {
         background-color: #87465C !important;
         border-color: #87465C !important;
-        color: #FFFFFF !important; // Asegurar que el texto del botón sea blanco
-        font-size: 1rem;
+        color: #FFFFFF !important;
+        font-size: 0.9rem;
+        padding: 8px 16px;
+        margin-top: auto; /* Empujar el botón hacia abajo */
+        flex-grow: 0; /* No expandir */
+      }
+
+      .btn-primary:hover {
+        background-color: #6d3748 !important;
+        border-color: #6d3748 !important;
       }
 
       .btn-primary i,
@@ -47,9 +66,20 @@
       a.btn.btn-sm.btn-block.o_default_snippet_text.bg-transparent.btn-outline-primary.text-primary {
         background-color: #fff !important;
         border-color: #87465C !important;
-        color: #87465C !important; // Asegurar que el texto del botón sea blanco
+        color: #87465C !important;
         font-size: 1rem;
       }
+    }
+    
+    /* Asegurar que las filas tengan la misma altura */
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    
+    .col-lg-3 {
+      display: flex;
+      margin-bottom: 20px;
     }
   }
   

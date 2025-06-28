@@ -28,7 +28,7 @@ class LatestProductsController(http.Controller):
                 products = Product.search([
                     ('is_published', '=', True),
                     ('website_published', '=', True)
-                ], limit=4, order='create_date desc')
+                ], limit=8, order='create_date desc')
             else:
                 _logger.info(f'Modo: Búsqueda por tarifa específica (ID: {pricelist_id}).')
                 pricelist = Pricelist.browse(pricelist_id)
@@ -46,7 +46,7 @@ class LatestProductsController(http.Controller):
                         ('id', 'in', product_ids),
                         ('is_published', '=', True),
                         ('website_published', '=', True)
-                    ], limit=4, order='create_date desc')
+                    ], limit=8, order='create_date desc')
             
             _logger.info(f'Número de productos encontrados: {len(products)}')
 
@@ -62,6 +62,7 @@ class LatestProductsController(http.Controller):
                 product_data.append({
                     'id': product_template.id,
                     'name': product_template.name,
+                    'code': product_template.default_code or '',
                     'price': price_info.get('price', 0),
                     'currency': pricelist.currency_id.name if pricelist else http.request.website.currency_id.name,
                     'image': product_template.image_1920,

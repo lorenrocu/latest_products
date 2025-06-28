@@ -53,18 +53,19 @@ odoo.define('latest_products.main', function (require) {
 
                 console.log('Rendering ' + result.products.length + ' products.');
                 result.products.forEach(function (product) {
+                    var productCode = product.code ? product.code + ' - ' : '';
                     var productCard = '<div class="col-lg-3 col-md-6 mb-4">' +
-                        '<div class="card">' +
+                        '<div class="card h-100">' +
                         '<div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">' +
                         '<img src="data:image/png;base64,' + product.image + '" class="img-fluid"/>' +
                         '<a href="/shop/product/' + product.id + '">' +
                         '<div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>' +
                         '</a>' +
                         '</div>' +
-                        '<div class="card-body">' +
-                        '<h5 class="card-title">' + product.name + '</h5>' +
-                        '<p class="card-text">' + product.price + ' ' + product.currency + '</p>' +
-                        '<a href="#" class="btn btn-primary">Añadir al carrito</a>' +
+                        '<div class="card-body d-flex flex-column">' +
+                        '<h5 class="card-title text-truncate">' + productCode + product.name + '</h5>' +
+                        '<p class="card-text mt-auto">' + product.price + ' ' + product.currency + '</p>' +
+                        '<a href="#" class="btn btn-primary btn-add-to-cart" data-product-id="' + product.variant_id + '">Añadir al carrito</a>' +
                         '</div>' +
                         '</div>' +
                         '</div>';
