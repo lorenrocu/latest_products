@@ -69,7 +69,7 @@ odoo.define('latest_products.main', function (require) {
                         '<div class="card h-100">' +
                         '<div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">' +
                         // Imagen dentro del enlace
-                        '<a href="/shop/product/' + product.id + '">' +
+                        '<a href="/shop/product/' + product.id + '?pricelist=1573">' +
                         '<img src="data:image/png;base64,' + product.image + '" class="img-fluid"/>' +
                         '<div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>' +
                         '</a>' +
@@ -77,7 +77,7 @@ odoo.define('latest_products.main', function (require) {
                         '<div class="card-body d-flex flex-column">' +
                         // Nombre del producto como enlace
                         '<h5 class="card-title text-truncate">' +
-                        '<a href="/shop/product/' + product.id + '">' + productCode + product.name + '</a>' +
+                        '<a href="/shop/product/' + product.id + '?pricelist=1573">' + productCode + product.name + '</a>' +
                         '</h5>' +
                         '<p class="card-text mt-auto">' + product.price + ' ' + product.currency + '</p>' +
                         '<a href="#" class="btn btn-primary btn-add-to-cart" data-product-id="' + product.variant_id + '">Añadir al carrito</a>' +
