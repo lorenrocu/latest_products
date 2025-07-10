@@ -82,7 +82,7 @@ odoo.define('latest_products.snippet_options', function (require) {
     // Registrar los eventos para las opciones de lista de precios
     options.registry.LatestProductsOptions.include({
         events: _.extend({}, options.registry.LatestProductsOptions.prototype.events, {
-            'click [data-pricelist-id]': 'selectPricelist',
+            'click #pricelist-options-latest-products [data-pricelist-id]': 'selectPricelist',
         }),
     });
 

@@ -8,8 +8,14 @@
         </li>
         <li class="dropdown-submenu">
           <a href="#" class="dropdown-item">Lista de Precios</a>
-          <ul class="dropdown-menu">
-            <li><a href="#" class="dropdown-item" data-pricelist-id="1573">Lista Principal</a></li>
+          <ul class="dropdown-menu" id="pricelist-options-latest-products">
+            <t t-foreach="request.env['product.pricelist'].search([('selectable', '=', True)])" t-as="pricelist">
+              <li>
+                <a href="#" class="dropdown-item" t-att-data-pricelist-id="pricelist.id">
+                  <t t-esc="pricelist.name"/>
+                </a>
+              </li>
+            </t>
             <li><a href="#" class="dropdown-item" data-pricelist-id="0">Todos los Productos</a></li>
           </ul>
         </li>

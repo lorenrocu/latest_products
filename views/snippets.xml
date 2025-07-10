@@ -1,7 +1,7 @@
 <odoo>
   <!-- 1) Plantilla del snippet -->
   <template id="mi_snippet" name="Ultimos Productos">
-    <section class="text-center my-5 mi_snippet_latest_products" data-pricelist-id="1573">
+    <section class="text-center my-5 mi_snippet_latest_products" data-pricelist-id="0">
       <div class="container">
         <!-- Sección Últimos Productos -->
         <div class="latest-products-section mb-5">

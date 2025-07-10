@@ -67,7 +67,9 @@ class LatestProductsController(http.Controller):
                     _logger.warning(f'El producto {product_template.name} (ID: {product_template.id}) no tiene una variante de producto predeterminada y será omitido.')
                     continue
 
-                price_info = product_variant._get_combination_info_variant(pricelist=pricelist)
+                # Si la tarifa no existe, se pasa None para que Odoo use la tarifa por defecto
+                final_pricelist = pricelist if pricelist and pricelist.exists() else None
+                price_info = product_variant._get_combination_info_variant(pricelist=final_pricelist)
                 _logger.info(f'Procesando producto: {product_template.name} (ID: {product_template.id}), Precio: {price_info.get("price")}')
                 product_data.append({
                     'id': product_template.id,
